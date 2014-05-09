@@ -3,28 +3,35 @@
 var amqp = require('amqplib');
 var when = require('when');
 
-// Sample program simply sends a random message to a given message queue, and displays messages
-// Use:   node send.js [name_of_queue]
-// Note:  You will need to have a receiver listening to each queue you want to send to, in a separate terminal session.
+// This program simply sends 10 random messages to the message queue, and displays those messages.
+// It is intended that one of the job workers (run in a separate terminal session via receive.js)
+// will pick up a messaage, sleep for a given time period to simulate "work", and then grab the next message.
+// The number of periods at the end of the message determines the relative sleep time.
+// Use:   node send.js
+// Note:  You will need to have one or more receivers listening the queue you want to send to, in separate terminal session(s).
+// http://localhost:15672/api/
 
-var messages = ['Hello World!', 'Damn, its hot in here!', 'Node rocks!', 'Who shot JR?', 'Tear down this wall!', 'Victory in Europe', 'The only thing we have to fear', 'Wheres Waldo?'];
+var messages = ['Hello World...', 'Damn, its hot in here..', 'Node rocks....', 'Who shot JR........', 'Tear down this wall..........', 'Victory in Europe..................', 'The only thing we have to fear....', 'Wheres Waldo?......'];
 
 // Connect to local RabbitMQ server
 amqp.connect('amqp://localhost').then(function(conn) {
   // create / return the channel, if possible.  Here is good documentation on the when helper function: http://howtonode.org/promises
   return when(conn.createChannel().then(function(ch) {
-    var q = process.argv[2];
-    var msg = messages[Math.floor(Math.random() * messages.length)];
+    var q = 'main';
+    var NUM_MESSAGES = 10;     // How many messages to send. 
 
     // Set the queue to listen to
-    var ok = ch.assertQueue(q, {durable: false});
+    var ok = ch.assertQueue(q, {durable: true});
     
     // set the message queue handler function
     return ok.then(function(_qok) {
-      // Send one message to the asked for queue
-      ch.sendToQueue(q, new Buffer(msg));
-      console.log(" [x] Sent '%s' to queue '%s'", msg, q);
-      // then close that message
+      // Send messages to the asked for queue
+      for (var i = 0; i < NUM_MESSAGES; i++) {
+        var msg = messages[Math.floor(Math.random() * messages.length)];
+        ch.sendToQueue(q, new Buffer(msg), {deliveryMode: true});
+        console.log(" [x] Sent '%s' to queue '%s'", msg, q);
+      }
+      // then close that channel
       return ch.close();
     });
   // close the connection, as the last thing you do 
