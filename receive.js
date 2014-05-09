@@ -10,10 +10,12 @@ function sleep(delay) {
   while (new Date().getTime() < start + delay);
 };
 
-// Sample program simply listens to a given message queue, and displays messages
+// Sample program simply listens to a given message queue, picks up messages (which are simulated jobs), and then
+// completes the job.
 // Use:   node receive.js [name_of_queue]
 
 // Connect to local RabbitMQ server that is running (install, then run from a terminal via: rabbitmq-server)
+
 //   .then is a promise that executes the function once the connection is established.
 amqp.connect('amqp://localhost').then(function(conn) {
   // Handle the UNIX INT signal to close the connection.

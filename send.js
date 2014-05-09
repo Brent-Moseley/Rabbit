@@ -3,11 +3,12 @@
 var amqp = require('amqplib');
 var when = require('when');
 
-// This program simply sends 10 random messages to the message queue, and displays those messages.
-// It is intended that one of the job workers (run in a separate terminal session via receive.js)
-// will pick up a messaage, sleep for a given time period to simulate "work", and then grab the next message.
+// This program simply sends a specified number of random messages to a message queue (simulating jobs to be done), displaying what was sent.
+// It is intended that one of a series of job workers (run in a separate terminal session via receive.js)
+// will pick up the messaage, sleep for a given time period to simulate "work", and then grab the next message.
 // The number of periods at the end of the message determines the relative sleep time.
 // Use:   node send.js [num_messages]
+// Connect to local RabbitMQ server that is running (install, then run from a terminal via: rabbitmq-server)
 // Note:  You will need to have one or more receivers listening the queue you want to send to, in separate terminal session(s).
 //        You can view the monitor console at http://localhost:15672/   login guest, pwd guest
 
