@@ -19,6 +19,7 @@ amqp.connect('amqp://localhost').then(function(conn) {
   return when(conn.createChannel().then(function(ch) {
     var q = 'main';
     var NUM_MESSAGES = 10;     // How many messages to send. 
+    var messageId = Math.floor(Math.random() * 1000);   // Generate a random starting message ID
 
     // Set the queue to listen to
     var ok = ch.assertQueue(q, {durable: true});
@@ -27,7 +28,8 @@ amqp.connect('amqp://localhost').then(function(conn) {
     return ok.then(function(_qok) {
       // Send messages to the asked for queue
       for (var i = 0; i < NUM_MESSAGES; i++) {
-        var msg = messages[Math.floor(Math.random() * messages.length)];
+        var msg = messageId.toString() + '-' + messages[Math.floor(Math.random() * messages.length)];
+        messageId++;
         ch.sendToQueue(q, new Buffer(msg), {deliveryMode: true});
         console.log(" [x] Sent '%s' to queue '%s'", msg, q);
       }

@@ -30,9 +30,9 @@ amqp.connect('amqp://localhost').then(function(conn) {
       // "consume" the message, just printing it out to the console.
       return ch.consume(queue, function(msg) {
         console.log(" [x] Received '%s'", msg.content.toString());
-        var reg = /[^a-zA-Z?! ]+/;
+        var reg = /[^0-9a-zA-Z?!\- ]+/;
         var time = parseInt(reg.exec(msg.content.toString())[0].length) * 250; 
-        console.log ("   Sleeping for: " + time.toString());
+        console.log ("   'Working' for: " + time.toString() + "ms");
         sleep(time);
         console.log("   Completed.");
       }, {noAck: true});
